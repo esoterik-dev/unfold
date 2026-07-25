@@ -36,7 +36,7 @@ fetches transactions every time the cron job's timer is met.
 
 - Using golang's build system:
   ```bash
-  go install github.com/wantguns/unfold
+  go install github.com/esoterik-dev/unfold@latest
   ```
 - Building locally
   ```bash
