@@ -9,15 +9,19 @@ import (
 )
 
 func GetPresentUUIDs(filename string) map[string]bool {
+	uuids := make(map[string]bool)
+
 	file, err := os.Open(filename)
 	if err != nil {
+		if os.IsNotExist(err) {
+			log.Debug().Msgf("Ledger file does not exist yet: %s", filename)
+			return uuids
+		}
 		log.Error().Err(err).Msgf("Failed to open ledger file for parsing: %+v", filename)
+		return uuids
 	}
 
 	defer file.Close()
-
-	var uuids map[string]bool
-	uuids = make(map[string]bool)
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
