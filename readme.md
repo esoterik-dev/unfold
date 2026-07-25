@@ -170,6 +170,119 @@ Flags:
 Use "unfold [command] --help" for more information about a command.
 ```
 
+### MCP Integration (AI Assistants)
+
+Unfold ships with a generic [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that lets
+any MCP-compatible AI assistant query your Fold Money data. This works with
+**Claude Desktop**, **ChatGPT Desktop**, **Cursor**, **Windsurf**, **Zed**, or
+any other client that speaks MCP.
+
+#### How it works
+
+The MCP server (`mcp/server.py`) wraps the `unfold` CLI binary as 23 tools.
+Your AI assistant can call them conversationally — "show me my spending last
+month" → the AI calls `spend_summary` → you get the answer. No API keys, no
+cloud services, everything stays local.
+
+#### Setup
+
+1. **Install the MCP Python SDK:**
+   ```bash
+   pip install mcp
+   ```
+
+2. **Build the CLI** (if you haven't already):
+   ```bash
+   go build -o unfold .
+   ```
+
+3. **Configure your AI client** — add the server to your MCP config file:
+
+   **Claude Desktop** — `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
+   or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+   ```json
+   {
+     "mcpServers": {
+       "unfold": {
+         "command": "python3",
+         "args": ["/absolute/path/to/unfold-fork/mcp/server.py"],
+         "env": {
+           "UNFOLD_BIN": "/absolute/path/to/unfold-fork/unfold"
+         }
+       }
+     }
+   }
+   ```
+
+   **ChatGPT Desktop** — same format, edit `~/.config/chatgpt/` or the app's settings:
+   ```json
+   {
+     "mcpServers": {
+       "unfold": {
+         "command": "python3",
+         "args": ["/absolute/path/to/unfold-fork/mcp/server.py"],
+         "env": {
+           "UNFOLD_BIN": "/absolute/path/to/unfold-fork/unfold"
+         }
+       }
+     }
+   }
+   ```
+
+   **Cursor** — `.cursor/mcp.json` in your project or global config:
+   ```json
+   {
+     "mcpServers": {
+       "unfold": {
+         "command": "python3",
+         "args": ["/absolute/path/to/unfold-fork/mcp/server.py"],
+         "env": {
+           "UNFOLD_BIN": "/absolute/path/to/unfold-fork/unfold"
+         }
+       }
+     }
+   }
+   ```
+
+4. **Restart your AI client** — it will discover the unfold tools automatically.
+
+#### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `login` | Log in to your Fold account (supports headless `--send-otp`) |
+| `sync_transactions` | Fetch latest transactions into the local database |
+| `recent` | Show most recent transactions |
+| `search` | Search by merchant, amount, type, date, payment mode |
+| `spend_summary` | Income vs spending, top merchants, avg daily spend |
+| `merchant_summary` | Top merchants ranked by spend or frequency |
+| `monthly_trend` | Month-by-month income, spending, net cash flow |
+| `balance_history` | Average/min/max account balance per month |
+| `mode_breakdown` | Spending by payment mode (UPI, CARD, NEFT, etc.) |
+| `recurring` | Merchants appearing in multiple months (subscriptions) |
+| `account_breakdown` | Spending by bank account |
+| `day_patterns` | Spending by weekday or day-of-month |
+| `category_breakdown` | Spending by category (Food, Transport, Shopping, etc.) |
+| `savings_rate` | Monthly savings rate with rolling average |
+| `weekly_digest` | 7-day spending vs 3-week rolling average |
+| `tax_report` | Full Indian FY (Apr-Mar) report |
+| `unusual_transactions` | Flag transactions above Nx merchant average |
+| `compare_periods` | Side-by-side comparison of two date ranges |
+| `forecast` | Projected month-end spend based on current pace |
+| `streak` | Current and longest low-spend day streak |
+| `export_csv` | Export filtered transactions to CSV |
+| `user_info` | Get your Fold account details |
+| `availability` | Check date range of available banking data |
+
+#### Testing the server standalone
+
+```bash
+UNFOLD_BIN=/path/to/unfold python3 mcp/server.py
+```
+
+The server communicates over stdin/stdout using the MCP protocol. Your AI
+client handles this automatically — you never need to interact with it directly.
+
 ### Credits
 
 [Fold Money](https://fold.money), for their Account Aggregator integration
