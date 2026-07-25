@@ -178,7 +178,11 @@ func filterTransactions(raw TransactionsResponse, since time.Time) []FilteredTra
 
 		// Preserve merchant_address if available
 		if t[i].MerchantAddress != nil {
-			transaction.MerchantAddress = t[i].MerchantAddress.(string)
+			if addrStr, ok := t[i].MerchantAddress.(string); ok {
+				transaction.MerchantAddress = addrStr
+			} else if addrBytes, err := json.Marshal(t[i].MerchantAddress); err == nil {
+				transaction.MerchantAddress = string(addrBytes)
+			}
 		}
 
 		// Preserve via if available
@@ -197,7 +201,11 @@ func filterTransactions(raw TransactionsResponse, since time.Time) []FilteredTra
 
 		// Preserve notes if available
 		if t[i].Notes != nil {
-			transaction.Notes = t[i].Notes.(string)
+			if notesStr, ok := t[i].Notes.(string); ok {
+				transaction.Notes = notesStr
+			} else if notesBytes, err := json.Marshal(t[i].Notes); err == nil {
+				transaction.Notes = string(notesBytes)
+			}
 		}
 
 		// Preserve tags as JSON string if available
@@ -209,12 +217,20 @@ func filterTransactions(raw TransactionsResponse, since time.Time) []FilteredTra
 
 		// Preserve refund_received_on if available
 		if t[i].RefundReceivedOn != nil {
-			transaction.RefundReceivedOn = t[i].RefundReceivedOn.(string)
+			if rrStr, ok := t[i].RefundReceivedOn.(string); ok {
+				transaction.RefundReceivedOn = rrStr
+			} else if rrBytes, err := json.Marshal(t[i].RefundReceivedOn); err == nil {
+				transaction.RefundReceivedOn = string(rrBytes)
+			}
 		}
 
 		// Preserve contact_id if available
 		if t[i].ContactID != nil {
-			transaction.ContactID = t[i].ContactID.(string)
+			if cidStr, ok := t[i].ContactID.(string); ok {
+				transaction.ContactID = cidStr
+			} else if cidBytes, err := json.Marshal(t[i].ContactID); err == nil {
+				transaction.ContactID = string(cidBytes)
+			}
 		}
 
 		// Preserve group_ids as JSON string if available

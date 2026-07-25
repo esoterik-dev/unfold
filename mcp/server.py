@@ -161,9 +161,9 @@ def spend_summary(since: str = "", until: str = "", db_path: str = "") -> str:
     """
     args = ["db", "spend-summary"]
     if since:
-        args += ["--since", since]
+        args += ["--start", since]
     if until:
-        args += ["--until", until]
+        args += ["--end", until]
     return _run(args, db_path=db_path or None)
 
 
@@ -186,9 +186,9 @@ def merchant_summary(
     """
     args = ["db", "merchant-summary", "-n", str(limit), "--sort", sort]
     if since:
-        args += ["--since", since]
+        args += ["--start", since]
     if until:
-        args += ["--until", until]
+        args += ["--end", until]
     return _run(args, db_path=db_path or None)
 
 
@@ -223,9 +223,9 @@ def mode_breakdown(since: str = "", until: str = "", db_path: str = "") -> str:
     """
     args = ["db", "mode-breakdown"]
     if since:
-        args += ["--since", since]
+        args += ["--start", since]
     if until:
-        args += ["--until", until]
+        args += ["--end", until]
     return _run(args, db_path=db_path or None)
 
 
@@ -237,7 +237,7 @@ def recurring(months: int = 3, db_path: str = "") -> str:
         months: Minimum distinct months a merchant must appear in (default 3)
         db_path: Path to SQLite database. Default: db.sqlite
     """
-    return _run(["db", "recurring", "--months", str(months)], db_path=db_path or None)
+    return _run(["db", "recurring", "--min-months", str(months)], db_path=db_path or None)
 
 
 @mcp.tool()
@@ -251,9 +251,9 @@ def account_breakdown(since: str = "", until: str = "", db_path: str = "") -> st
     """
     args = ["db", "account-breakdown"]
     if since:
-        args += ["--since", since]
+        args += ["--start", since]
     if until:
-        args += ["--until", until]
+        args += ["--end", until]
     return _run(args, db_path=db_path or None)
 
 
@@ -278,9 +278,9 @@ def category_breakdown(since: str = "", until: str = "", db_path: str = "") -> s
     """
     args = ["db", "category"]
     if since:
-        args += ["--since", since]
+        args += ["--start", since]
     if until:
-        args += ["--until", until]
+        args += ["--end", until]
     return _run(args, db_path=db_path or None)
 
 
@@ -335,9 +335,9 @@ def unusual_transactions(
     """
     args = ["db", "unusual", "--multiplier", str(multiplier)]
     if since:
-        args += ["--since", since]
+        args += ["--start", since]
     if until:
-        args += ["--until", until]
+        args += ["--end", until]
     return _run(args, db_path=db_path or None)
 
 
@@ -360,8 +360,8 @@ def compare_periods(
     """
     args = [
         "db", "compare",
-        "--start1", start1, "--end1", end1,
-        "--start2", start2, "--end2", end2,
+        "--p1-start", start1, "--p1-end", end1,
+        "--p2-start", start2, "--p2-end", end2,
     ]
     return _run(args, db_path=db_path or None)
 

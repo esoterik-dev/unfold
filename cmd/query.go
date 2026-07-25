@@ -98,7 +98,7 @@ func queryTxns(startDate, endDate string, excludeTransfers bool) []txnRow {
 		Mode           string
 		Summary        string
 	}
-	q := db.Conn.Where("timestamp >= ? AND timestamp <= ?", startDate+" 00:00:00", endDate+" 23:59:59")
+	q := db.Conn.Model(&db.Transactions{}).Where("timestamp >= ? AND timestamp <= ?", startDate+" 00:00:00", endDate+" 23:59:59")
 	if excludeTransfers {
 		q = q.Where("category_id NOT IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 			"247e3e5d-59bf-4bf8-82ff-c152569893ea", // Self Transfer
@@ -146,7 +146,7 @@ var recentCmd = &cobra.Command{
 			Timestamp                                 time.Time
 			CategoryID, Mode                          string
 		}
-		db.Conn.Order("timestamp DESC").Limit(limit).Find(&rows)
+		db.Conn.Model(&db.Transactions{}).Order("timestamp DESC").Limit(limit).Find(&rows)
 		for _, r := range rows {
 			merchant := r.Merchant
 			if merchant == "" {
