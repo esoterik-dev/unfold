@@ -1,6 +1,8 @@
 ## Workspace related
 bin/*
 *.sqlite
+*.ledger
+*.csv
 
 ## Github
 # If you prefer the allow list template instead of the deny list, see community template:
@@ -26,3 +28,6 @@ bin/*
 go.work
 
 dist/
+
+# MCP server
+mcp/__pycache__/
