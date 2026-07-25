@@ -40,7 +40,7 @@ fetches transactions every time the cron job's timer is met.
   ```
 - Building locally
   ```bash
-  go build -o unfold .
+  go build -o bin/unfold .
   ```
 
 ### Usage
