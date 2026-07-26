@@ -28,7 +28,6 @@ if not UNFOLD_BIN:
 
 mcp = FastMCP(
     "unfold",
-    
     instructions="Query your Fold Money transaction data stored in a local SQLite database.",
 )
 
