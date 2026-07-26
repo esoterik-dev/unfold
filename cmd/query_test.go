@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/wantguns/unfold/db"
+	"github.com/esoterik-dev/unfold/db"
 )
 
 const (
