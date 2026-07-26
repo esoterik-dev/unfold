@@ -106,7 +106,7 @@ fetches transactions every time the cron job's timer is met.
     unfold db account-breakdown
 
     # Merchants appearing in N+ distinct months (subscriptions, bills)
-    unfold db recurring --months 3
+    unfold db recurring --min-months 3
 
     # Spending by weekday or day-of-month
     unfold db day-patterns
@@ -124,7 +124,7 @@ fetches transactions every time the cron job's timer is met.
     unfold db unusual --multiplier 3.0
 
     # Side-by-side comparison of two date ranges
-    unfold db compare --start1 2024-01-01 --end1 2024-06-30 --start2 2024-07-01 --end2 2024-12-31
+    unfold db compare --p1-start 2024-01-01 --p1-end 2024-06-30 --p2-start 2024-07-01 --p2-end 2024-12-31
 
     # Projected month-end spend based on current pace
     unfold db forecast

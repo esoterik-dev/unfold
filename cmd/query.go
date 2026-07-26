@@ -249,7 +249,7 @@ var spendSummaryCmd = &cobra.Command{
 			}
 		}
 
-		days := time.Now().Sub(parseDateFlag(start, daysAgo(30))).Hours()/24 + 1
+		days := parseDateFlag(end, today()).Sub(parseDateFlag(start, daysAgo(30))).Hours()/24 + 1
 		if days < 1 {
 			days = 1
 		}
@@ -504,11 +504,11 @@ var recurringCmd = &cobra.Command{
 			AvgPerMonth float64
 		}
 		db.Conn.Raw(`
-			SELECT merchant, COUNT(DISTINCT strftime('%Y-%m', timestamp)) as months,
+			SELECT merchant, COUNT(DISTINCT strftime('%Y-%m', timestamp)) as dist_months,
 				SUM(amount) as total, SUM(amount)/COUNT(DISTINCT strftime('%Y-%m', timestamp)) as avg_per_month
 			FROM transactions
 			WHERE timestamp >= ? AND timestamp <= ? AND type = 'OUTGOING'
-			GROUP BY merchant HAVING months >= ?
+			GROUP BY merchant HAVING dist_months >= ?
 			ORDER BY total DESC LIMIT ?
 		`, start+" 00:00:00", end+" 23:59:59", minMonths, limit).Scan(&rows)
 
@@ -1086,7 +1086,7 @@ var compareCmd = &cobra.Command{
 					s += t.Amount
 				}
 			}
-			d := time.Now().Sub(parseDateFlag(start, daysAgo(30))).Hours()/24 + 1
+			d := parseDateFlag(end, today()).Sub(parseDateFlag(start, daysAgo(30))).Hours()/24 + 1
 			avg := 0.0
 			if d > 0 {
 				avg = s / d
