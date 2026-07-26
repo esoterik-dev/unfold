@@ -67,7 +67,7 @@ func setupTransactionsCmdHandler(cmd *cobra.Command, args []string) {
 		})
 
 		go c.Start()
-		sig := make(chan os.Signal)
+		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, os.Interrupt, os.Kill)
 		<-sig
 	}
@@ -88,13 +88,37 @@ func printTransactions(t api.FilteredTransactions) {
 
 func writeToDb(t api.FilteredTransactions) {
 	db.Conn.Clauses(clause.OnConflict{UpdateAll: true}).Create(&db.Transactions{
-		UUID:           t.UUID,
-		Timestamp:      t.TxnTimestamp,
-		Amount:         t.Amount,
-		Type:           t.Type,
-		Merchant:       t.Merchant,
-		CurrentBalance: t.CurrentBalance,
-		Account:        t.Account,
+		UUID:                 t.UUID,
+		Timestamp:            t.TxnTimestamp,
+		Amount:               t.Amount,
+		Type:                 t.Type,
+		Merchant:             t.Merchant,
+		MerchantAddress:      t.MerchantAddress,
+		Narration:            t.Narration,
+		CurrentBalance:       t.CurrentBalance,
+		Account:              t.Account,
+		AccountID:            t.AccountID,
+		Category:             t.Category,
+		CategoryID:           t.CategoryID,
+		Subcategory:          t.Subcategory,
+		Tags:                 t.Tags,
+		Kind:                 t.Kind,
+		Mode:                 t.Mode,
+		Reference:            t.Reference,
+		Notes:                t.Notes,
+		ExcludedFromCashFlow: t.ExcludedFromCashFlow,
+		IsBookmarked:         t.IsBookmarked,
+		Summary:              t.Summary,
+		TransactionID:        t.TransactionID,
+		RefundStatus:         t.RefundStatus,
+		RefundReceivedOn:     t.RefundReceivedOn,
+		BeforeFoldAccount:    t.BeforeFoldAccount,
+		Via:                  t.Via,
+		AccountIn:            t.AccountIn,
+		ContactID:            t.ContactID,
+		GroupIDs:             t.GroupIDs,
+		F1PredictedCategory:  t.F1PredictedCategory,
+		F1PredictedMerchant:  t.F1PredictedMerchant,
 	})
 }
 
