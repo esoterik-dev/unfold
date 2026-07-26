@@ -205,9 +205,9 @@ cloud services, everything stays local.
      "mcpServers": {
        "unfold": {
          "command": "python3",
-         "args": ["/absolute/path/to/unfold-fork/mcp/server.py"],
+         "args": ["/absolute/path/to/unfold/mcp/server.py"],
          "env": {
-           "UNFOLD_BIN": "/absolute/path/to/unfold-fork/unfold"
+           "UNFOLD_BIN": "/absolute/path/to/unfold/unfold"
          }
        }
      }
@@ -220,9 +220,9 @@ cloud services, everything stays local.
      "mcpServers": {
        "unfold": {
          "command": "python3",
-         "args": ["/absolute/path/to/unfold-fork/mcp/server.py"],
+         "args": ["/absolute/path/to/unfold/mcp/server.py"],
          "env": {
-           "UNFOLD_BIN": "/absolute/path/to/unfold-fork/unfold"
+           "UNFOLD_BIN": "/absolute/path/to/unfold/unfold"
          }
        }
      }
@@ -235,9 +235,9 @@ cloud services, everything stays local.
      "mcpServers": {
        "unfold": {
          "command": "python3",
-         "args": ["/absolute/path/to/unfold-fork/mcp/server.py"],
+         "args": ["/absolute/path/to/unfold/mcp/server.py"],
          "env": {
-           "UNFOLD_BIN": "/absolute/path/to/unfold-fork/unfold"
+           "UNFOLD_BIN": "/absolute/path/to/unfold/unfold"
          }
        }
      }
