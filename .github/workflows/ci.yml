@@ -27,6 +27,9 @@ jobs:
       - name: Vet Go
         run: go vet ./...
 
+      - name: Build Go
+        run: go build ./...
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
