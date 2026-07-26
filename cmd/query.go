@@ -1012,7 +1012,7 @@ var unusualCmd = &cobra.Command{
 
 		// Find unusual in date range
 		var txns []txnRow
-		db.Conn.Where("timestamp >= ? AND timestamp <= ? AND type = 'OUTGOING'",
+		db.Conn.Model(&db.Transactions{}).Where("timestamp >= ? AND timestamp <= ? AND type = 'OUTGOING'",
 			start+" 00:00:00", end+" 23:59:59").Order("amount DESC").Find(&txns)
 
 		type flaggedTxn struct {
