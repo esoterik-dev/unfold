@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/wantguns/unfold/api"
+	"github.com/esoterik-dev/unfold/api"
 )
 
 var AvailabilityCmd = &cobra.Command{

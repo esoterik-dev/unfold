@@ -1,4 +1,4 @@
-module github.com/wantguns/unfold
+module github.com/esoterik-dev/unfold
 
 go 1.20
 
