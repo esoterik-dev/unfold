@@ -85,7 +85,7 @@ fetches transactions every time the cron job's timer is met.
     unfold db search --query zomato --start 2024-01-01
 
     # Spending summary (income vs spending, top merchants, avg daily)
-    unfold db spend-summary --since 2024-01-01
+    unfold db spend-summary --start 2024-01-01
 
     # Month-by-month income/spending/net
     unfold db monthly-trend
