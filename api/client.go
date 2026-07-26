@@ -28,6 +28,7 @@ func APIRequest(method, path string, body io.Reader) (*http.Request, error) {
 	}
 
 	req.Header.Set("Authorization", "Bearer "+viper.GetString("token.access"))
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "ua/unfold")
 	req.Header.Set("X-Device-Hash", viper.GetString("device_hash"))
 	req.Header.Set("X-Device-Location", "India")
