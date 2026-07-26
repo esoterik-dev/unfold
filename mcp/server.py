@@ -88,11 +88,16 @@ def sync_transactions(
         db_path: Path to SQLite database file. Default: db.sqlite
     """
     args = ["transactions", "--db"]
+    # `transactions` has its own --db-path flag, which shadows the root flag.
+    # Keep this path after the subcommand so sync writes to the same database
+    # that the query tools read.
+    if db_path:
+        args += ["--db-path", db_path]
     if since:
         args += ["--since", since]
     if till:
         args += ["--till", till]
-    return _run(args, db_path=db_path or None)
+    return _run(args)
 
 
 @mcp.tool()
