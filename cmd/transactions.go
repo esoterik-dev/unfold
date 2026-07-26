@@ -13,9 +13,9 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm/clause"
 
-	"github.com/wantguns/unfold/api"
-	"github.com/wantguns/unfold/db"
-	"github.com/wantguns/unfold/ledger"
+	"github.com/esoterik-dev/unfold/api"
+	"github.com/esoterik-dev/unfold/db"
+	"github.com/esoterik-dev/unfold/ledger"
 )
 
 var TransactionsCmd = &cobra.Command{

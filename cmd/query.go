@@ -12,8 +12,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/wantguns/unfold/db"
-	"github.com/wantguns/unfold/query"
+	"github.com/esoterik-dev/unfold/db"
+	"github.com/esoterik-dev/unfold/query"
 )
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────

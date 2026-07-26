@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 
-	"github.com/wantguns/unfold/cmd"
+	"github.com/esoterik-dev/unfold/cmd"
 )
 
 func main() {
