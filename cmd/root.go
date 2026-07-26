@@ -16,6 +16,10 @@ var (
 	cfgFile     string
 	enableDebug bool
 
+	// Version is set from main.go via ldflags at build time.
+	// Falls back to "dev" for local go install without ldflags.
+	Version = "dev"
+
 	rootCmd = &cobra.Command{
 		Use:   "unfold",
 		Short: "An unofficial cli client for fold.money",
@@ -89,5 +93,6 @@ func initConfig() {
 
 // Execute executes the root command.
 func Execute() error {
+	rootCmd.Version = Version
 	return rootCmd.Execute()
 }
