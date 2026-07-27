@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"bytes"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -9,39 +10,37 @@ import (
 func TestVersionFlagsPrintConfiguredVersion(t *testing.T) {
 	const wantVersion = "v0.1.0"
 
-	originalVersion := Version
-	Version = wantVersion
-	t.Cleanup(func() { Version = originalVersion })
+	binary := filepath.Join(t.TempDir(), "unfold")
+	build := exec.Command("go", "build", "-ldflags", "-X main.version="+wantVersion, "-o", binary, "..")
+	build.Dir = "."
+	if output, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("build CLI: %v\n%s", err, output)
+	}
 
 	for _, args := range [][]string{{"--version"}, {"-V"}} {
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
-			versionFlag := rootCmd.PersistentFlags().Lookup("version")
-			if versionFlag == nil {
-				t.Fatal("version flag is not registered")
+			output, err := exec.Command(binary, args...).CombinedOutput()
+			if err != nil {
+				t.Fatalf("run %q: %v\n%s", args, err, output)
 			}
-			if err := versionFlag.Value.Set("false"); err != nil {
-				t.Fatalf("reset version flag: %v", err)
-			}
-			versionFlag.Changed = false
-
-			var output bytes.Buffer
-			rootCmd.SetOut(&output)
-			rootCmd.SetErr(&output)
-			rootCmd.SetArgs(args)
-			t.Cleanup(func() {
-				rootCmd.SetOut(nil)
-				rootCmd.SetErr(nil)
-				rootCmd.SetArgs(nil)
-				_ = versionFlag.Value.Set("false")
-				versionFlag.Changed = false
-			})
-
-			if err := Execute(); err != nil {
-				t.Fatalf("Execute(%q): %v", args, err)
-			}
-			if got, want := output.String(), "unfold version "+wantVersion+"\n"; got != want {
+			if got, want := string(output), "unfold version "+wantVersion+"\n"; got != want {
 				t.Errorf("version output = %q, want %q", got, want)
 			}
 		})
+	}
+}
+
+func TestVersionFlagShorthandsDoNotConflict(t *testing.T) {
+	for name, wantShorthand := range map[string]string{
+		"debug":   "v",
+		"version": "V",
+	} {
+		flag := rootCmd.PersistentFlags().Lookup(name)
+		if flag == nil {
+			t.Fatalf("%s flag is not registered", name)
+		}
+		if got := flag.Shorthand; got != wantShorthand {
+			t.Errorf("%s shorthand = %q, want %q", name, got, wantShorthand)
+		}
 	}
 }
