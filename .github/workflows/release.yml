@@ -43,27 +43,35 @@ jobs:
           tag="$(./scripts/release/next-prerelease-tag.sh)"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
-      - name: Create and push tag
+      - name: Create or validate prerelease tag
         env:
           TAG: ${{ steps.version.outputs.tag }}
+          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "Prerelease $TAG for PR #${{ github.event.pull_request.number }}"
-          git push origin "$TAG"
+          ./scripts/release/ensure-prerelease-tag.sh "$TAG" "$MERGE_COMMIT" "$PR_NUMBER"
 
-      - name: Create draft GitHub prerelease
+      - name: Create or update draft GitHub prerelease
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
-          gh release create "$TAG" \
-            --draft \
-            --prerelease \
-            --title "$TAG" \
-            --notes "${PR_TITLE}"$'\n\n'"Merged pull request: ${PR_URL}"
+          notes="${PR_TITLE}"$'\n\n'"Merged pull request: ${PR_URL}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --draft \
+              --prerelease \
+              --title "$TAG" \
+              --notes "$notes"
+          else
+            gh release create "$TAG" \
+              --draft \
+              --prerelease \
+              --title "$TAG" \
+              --notes "$notes"
+          fi
 
   goreleaser:
     # Pre-releases are created above as draft releases. Keep GoReleaser for
