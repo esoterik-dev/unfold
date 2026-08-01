@@ -10,6 +10,10 @@ import (
 	"github.com/esoterik-dev/unfold/cmd"
 )
 
+// version is set via ldflags at build time: -ldflags "-X main.version=<tag>"
+// Falls back to "dev" for local go install without ldflags.
+var version = "dev"
+
 func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -23,5 +27,6 @@ func main() {
 
 	defer viper.WriteConfig()
 
+	cmd.Version = version
 	cmd.Execute()
 }

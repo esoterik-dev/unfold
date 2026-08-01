@@ -16,6 +16,10 @@ var (
 	cfgFile     string
 	enableDebug bool
 
+	// Version is set from main.go via ldflags at build time.
+	// Falls back to "dev" for local go install without ldflags.
+	Version = "dev"
+
 	rootCmd = &cobra.Command{
 		Use:   "unfold",
 		Short: "An unofficial cli client for fold.money",
@@ -27,6 +31,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/unfold/config.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&enableDebug, "debug", "v", os.Getenv("DEBUG") == "true", "Enable debug mode")
+	rootCmd.PersistentFlags().BoolP("version", "V", false, "version for unfold")
 	rootCmd.PersistentFlags().String("db-path", "db.sqlite", "Path to SQLite database for query commands")
 	_ = viper.BindPFlag("db-path", rootCmd.PersistentFlags().Lookup("db-path"))
 	rootCmd.AddCommand(LoginCmd, RefreshCmd, UserCmd, AvailabilityCmd, TransactionsCmd, dbCmd)
@@ -89,5 +94,6 @@ func initConfig() {
 
 // Execute executes the root command.
 func Execute() error {
+	rootCmd.Version = Version
 	return rootCmd.Execute()
 }

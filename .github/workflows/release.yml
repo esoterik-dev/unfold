@@ -1,15 +1,84 @@
 name: Release
 
+# Bootstrap the first stable module version once, from the current main checkout:
+#   ./scripts/release/create-initial-tag.sh v0.1.0
+# The script refuses to overwrite an existing tag. Review the resulting tag, then
+# push it with: git push origin v0.1.0
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 permissions:
   contents: write
 
 jobs:
+  prerelease:
+    name: Create merged-PR prerelease
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the merged PR commit
+        uses: actions/checkout@v4
+        with:
+          # Tag the commit from this event, rather than a potentially newer main.
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+
+      - name: Calculate prerelease tag
+        id: version
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          tag="$(./scripts/release/next-prerelease-tag.sh)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Create or validate prerelease tag
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          ./scripts/release/ensure-prerelease-tag.sh "$TAG" "$MERGE_COMMIT" "$PR_NUMBER"
+
+      - name: Create or update draft GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          notes="${PR_TITLE}"$'\n\n'"Merged pull request: ${PR_URL}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --draft \
+              --prerelease \
+              --title "$TAG" \
+              --notes "$notes"
+          else
+            gh release create "$TAG" \
+              --draft \
+              --prerelease \
+              --title "$TAG" \
+              --notes "$notes"
+          fi
+
   goreleaser:
+    # Pre-releases are created above as draft releases. Keep GoReleaser for
+    # stable vX.Y.Z tags so it cannot replace or publish those drafts.
+    if: >-
+      github.event_name == 'push' &&
+      !contains(github.ref_name, '-pre.')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,10 +87,12 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20.x'
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
